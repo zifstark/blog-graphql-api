@@ -2,9 +2,9 @@ import graphene
 import graphql_jwt
 
 from users.schema import UserQuery, UserMutation, UserType
-from posts.schema import PostMutation
+from posts.schema import PostMutation, PostQuery
 
-class RootQuery(UserQuery, graphene.ObjectType):
+class RootQuery(UserQuery, PostQuery, graphene.ObjectType):
     me = graphene.Field(UserType)
 
     def resolve_me(self, info):

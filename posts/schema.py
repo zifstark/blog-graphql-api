@@ -19,7 +19,11 @@ class CreatePost(graphene.Mutation):
         post = services.createPost(kwargs, info)
         return CreatePost(post=post)
 
+class PostQuery(graphene.ObjectType):
+    posts = graphene.List(PostType)
 
+    def resolve_posts(self, info, **kwargs):
+        return Post.objects.all()
 
 class PostMutation(graphene.ObjectType):
     create_post = CreatePost.Field()
