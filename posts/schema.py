@@ -19,6 +19,18 @@ class CreatePost(graphene.Mutation):
         post = services.createPost(kwargs, info)
         return CreatePost(post=post)
 
+class UpdatePost(graphene.Mutation):
+    post = graphene.Field(PostType)
+
+    class Arguments:
+        postId = graphene.String(required=True)
+        text = graphene.String(required=True)
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        post = services.updatePost(kwargs, info)
+        return UpdatePost(post=post)
+
 class PostQuery(graphene.ObjectType):
     posts = graphene.List(PostType)
 
@@ -27,3 +39,4 @@ class PostQuery(graphene.ObjectType):
 
 class PostMutation(graphene.ObjectType):
     create_post = CreatePost.Field()
+    update_post = UpdatePost.Field()
