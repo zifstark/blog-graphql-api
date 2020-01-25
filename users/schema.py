@@ -33,9 +33,24 @@ class SignUp(graphene.Mutation):
         user.save()
         return SignUp(user=user)
 
+class UpdateUser(graphene.Mutation):
+    user = graphene.Field(UserType)
+
+    class Arguments:
+        username = graphene.String()
+        password = graphene.String()
+        email = graphene.String()
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        user = services.updateUser(kwargs, info)
+        return UpdateUser(user=user)
+
+
 class UserMutation(graphene.ObjectType):
     sign_up = SignUp.Field()
     delete_user = DeleteUser.Field()
+    update_user = UpdateUser.Field()
 
 class UserQuery(graphene.ObjectType):
     users = graphene.List(UserType)
