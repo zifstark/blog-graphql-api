@@ -2,6 +2,7 @@ import graphene
 import graphql_jwt
 
 from users.schema import UserQuery, UserMutation, UserType
+from posts.schema import PostMutation
 
 class RootQuery(UserQuery, graphene.ObjectType):
     me = graphene.Field(UserType)
@@ -12,7 +13,7 @@ class RootQuery(UserQuery, graphene.ObjectType):
             raise Exception('Not log in!')
         return user
 
-class RootMutation(UserMutation, graphene.ObjectType):
+class RootMutation(UserMutation, PostMutation, graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
