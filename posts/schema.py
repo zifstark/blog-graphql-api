@@ -1,12 +1,27 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
-from .models import Post
+from .models import Post, Clap
 from . import services
 
 class PostType(DjangoObjectType):
     class Meta:
         model = Post
+
+class ClapType(DjangoObjectType):
+    class Meta:
+        model = Clap
+
+class ClapPost(graphene.Mutation):
+    clap = graphene.Field(ClapType)
+
+    class Arguments:
+        post_id = graphene.Int()
+
+    @login_required
+    def mutate(self, info, post_id):
+        clap = services.clapPost(post_id, info)
+        return ClapPost(clap=clap)
 
 class CreatePost(graphene.Mutation):
     post = graphene.Field(PostType)
@@ -42,3 +57,4 @@ class PostQuery(graphene.ObjectType):
 class PostMutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     update_post = UpdatePost.Field()
+    clap_post = ClapPost.Field()
