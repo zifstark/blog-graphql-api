@@ -7,7 +7,7 @@ from . import services
 class PostType(DjangoObjectType):
     class Meta:
         model = Post
-
+        
 class CreatePost(graphene.Mutation):
     post = graphene.Field(PostType)
 
