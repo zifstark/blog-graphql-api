@@ -7,11 +7,12 @@ from . import services
 class PostType(DjangoObjectType):
     class Meta:
         model = Post
-        
+
 class CreatePost(graphene.Mutation):
     post = graphene.Field(PostType)
 
     class Arguments:
+        title = graphene.String()
         text = graphene.String()
 
     @login_required
@@ -24,7 +25,8 @@ class UpdatePost(graphene.Mutation):
 
     class Arguments:
         postId = graphene.String(required=True)
-        text = graphene.String(required=True)
+        text = graphene.String()
+        title = graphene.String()
 
     @login_required
     def mutate(self, info, **kwargs):
