@@ -1,6 +1,14 @@
 from django.contrib.auth import get_user_model
 from .models import Post, Clap
 
+def removeClap(post_id, info):
+    post = Post.objects.filter(id=post_id).first()
+    if not post:
+        raise Exception('Post not found')
+    c_user = info.context.user
+    results = Clap.objects.filter(post=post, user=c_user).delete()
+    return results[0] > 0
+
 def createPost(input, info):
     c_user = info.context.user
     new_post = Post(title=input['title'], text=input['text'], author=c_user)

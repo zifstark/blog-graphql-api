@@ -23,6 +23,17 @@ class ClapPost(graphene.Mutation):
         clap = services.clapPost(post_id, info)
         return ClapPost(clap=clap)
 
+class RemoveClap(graphene.Mutation):
+    deleted = graphene.Boolean()
+
+    class Arguments:
+        post_id = graphene.Int()
+
+    @login_required
+    def mutate(self, info, post_id):
+        is_deleted = services.removeClap(post_id, info)
+        return RemoveClap(deleted=is_deleted)
+
 class CreatePost(graphene.Mutation):
     post = graphene.Field(PostType)
 
@@ -58,3 +69,4 @@ class PostMutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     update_post = UpdatePost.Field()
     clap_post = ClapPost.Field()
+    remove_clap = RemoveClap.Field()
