@@ -7,6 +7,8 @@ def removeClap(post_id, info):
         raise Exception('Post not found')
     c_user = info.context.user
     results = Clap.objects.filter(post=post, user=c_user).delete()
+    post.claps_count -= 1
+    post.save()
     return results[0] > 0
 
 def createPost(input, info):
@@ -38,4 +40,6 @@ def clapPost(post_id, info):
         post=post
     )
     new_clap.save()
+    post.claps_count += 1
+    post.save()
     return clap
