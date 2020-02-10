@@ -1,6 +1,12 @@
 from django.contrib.auth import get_user_model
 from .models import Post, Clap, Response
 
+def response_by_id(response_id):
+    response = Response.objects.filter(id=response_id).first()
+    if not response:
+        raise Exception('Response not found!')
+    return response
+
 def createResponse(input, info):
     post = Post.objects.filter(id=input['post_id']).first()
     if not post:
