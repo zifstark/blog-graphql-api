@@ -1,6 +1,16 @@
 from django.contrib.auth import get_user_model
 from .models import Post, Clap, Response
 
+def deleteResponse(response_id, info):
+    response = Response.objects.filter(id=response_id).first()
+    if not response:
+        return False
+    c_user = info.context.user
+    if c_user.id != response.author.id:
+        raise Exception('Unauthorize action!')
+    results = response.delete()
+    return True
+
 def response_by_id(response_id):
     response = Response.objects.filter(id=response_id).first()
     if not response:
