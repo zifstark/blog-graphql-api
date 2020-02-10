@@ -1,5 +1,19 @@
 from django.contrib.auth import get_user_model
-from .models import Post, Clap
+from .models import Post, Clap, Response
+
+def createResponse(input, info):
+    post = Post.objects.filter(id=input['post_id']).first()
+    if not post:
+        raise Exception('Post not found')
+    c_user = info.context.user
+    new_response = Response(
+        post=post,
+        author=c_user,
+        text=input.get('text', '')
+    )
+    new_response.save()
+    return new_response
+
 
 def removeClap(post_id, info):
     post = Post.objects.filter(id=post_id).first()

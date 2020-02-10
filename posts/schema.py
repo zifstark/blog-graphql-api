@@ -1,8 +1,14 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
-from .models import Post, Clap
+from .models import Post, Clap, Response
 from . import services
+
+# Types
+
+class ResponseType(DjangoObjectType):
+    class Meta:
+        model = Response
 
 class PostType(DjangoObjectType):
     class Meta:
@@ -11,6 +17,20 @@ class PostType(DjangoObjectType):
 class ClapType(DjangoObjectType):
     class Meta:
         model = Clap
+
+# Mutations
+
+class CreateResponse(graphene.Mutation):
+    response = graphene.Field(ResponseType)
+
+    class Arguments:
+        post_id = graphene.Int()
+        text = graphene.String()
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        response = services.createResponse(kwargs, info)
+        return CreateResponse(response=response)
 
 class ClapPost(graphene.Mutation):
     clap = graphene.Field(ClapType)
@@ -59,14 +79,17 @@ class UpdatePost(graphene.Mutation):
         post = services.updatePost(kwargs, info)
         return UpdatePost(post=post)
 
+class PostMutation(graphene.ObjectType):
+    create_post = CreatePost.Field()
+    create_response = CreateResponse.Field()
+    update_post = UpdatePost.Field()
+    clap_post = ClapPost.Field()
+    remove_clap = RemoveClap.Field()
+
+# Queries
+
 class PostQuery(graphene.ObjectType):
     posts = graphene.List(PostType)
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
-
-class PostMutation(graphene.ObjectType):
-    create_post = CreatePost.Field()
-    update_post = UpdatePost.Field()
-    clap_post = ClapPost.Field()
-    remove_clap = RemoveClap.Field()
