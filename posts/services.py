@@ -7,6 +7,12 @@ def response_by_id(response_id):
         raise Exception('Response not found!')
     return response
 
+def post_by_id(post_id):
+    post = Post.objects.filter(id=post_id).first()
+    if not post:
+        raise Exception('Post not found!')
+    return post
+
 def createResponse(input, info):
     post = Post.objects.filter(id=input['post_id']).first()
     if not post:

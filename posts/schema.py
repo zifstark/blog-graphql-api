@@ -90,10 +90,14 @@ class PostMutation(graphene.ObjectType):
 
 class PostQuery(graphene.ObjectType):
     posts = graphene.List(PostType)
+    post = graphene.Field(PostType, post_id=graphene.Int())
     response = graphene.Field(ResponseType, response_id=graphene.Int())
 
     def resolve_response(self, info, response_id):
         return services.response_by_id(response_id)
+
+    def resolve_post(self, info, post_id):
+        return services.post_by_id(post_id)
 
     def resolve_posts(self, info, **kwargs):
         return Post.objects.all()
