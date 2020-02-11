@@ -20,6 +20,17 @@ class ClapType(DjangoObjectType):
 
 # Mutations
 
+class DeletePost(graphene.Mutation):
+    deleted = graphene.Boolean()
+
+    class Arguments:
+        post_id = graphene.Int()
+
+    @login_required
+    def mutate(self, info, post_id):
+        is_deleted = services.deletePost(post_id, info)
+        return DeletePost(deleted=is_deleted)
+
 class DeleteResponse(graphene.Mutation):
     deleted = graphene.Boolean()
 
@@ -91,6 +102,7 @@ class UpdatePost(graphene.Mutation):
         return UpdatePost(post=post)
 
 class PostMutation(graphene.ObjectType):
+    delete_post = DeletePost.Field()
     delete_response = DeleteResponse.Field()
     create_post = CreatePost.Field()
     create_response = CreateResponse.Field()
