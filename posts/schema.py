@@ -20,6 +20,19 @@ class ClapType(DjangoObjectType):
 
 # Mutations
 
+class UpdateResponse(graphene.Mutation):
+    response = graphene.Field(ResponseType)
+
+    class Arguments:
+        response_id = graphene.Int()
+        text = graphene.String()
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        response = services.updateResponse(kwargs, info)
+        return UpdateResponse(response=response)
+
+
 class DeletePost(graphene.Mutation):
     deleted = graphene.Boolean()
 
@@ -107,6 +120,7 @@ class PostMutation(graphene.ObjectType):
     create_post = CreatePost.Field()
     create_response = CreateResponse.Field()
     update_post = UpdatePost.Field()
+    update_response = UpdateResponse.Field()
     clap_post = ClapPost.Field()
     remove_clap = RemoveClap.Field()
 

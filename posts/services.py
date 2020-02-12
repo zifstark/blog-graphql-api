@@ -1,6 +1,17 @@
 from django.contrib.auth import get_user_model
 from .models import Post, Clap, Response
 
+def updateResponse(input, info):
+    response = Response.objects.filter(id=input.get('response_id', 0)).first()
+    if not response:
+        raise Exception('Response not found!')
+    c_user = info.context.user
+    if c_user.id != response.author.id:
+        raise Exception('Unauthorize action!')
+    response.text = input.get('text', response.text)
+    response.save()
+    return response
+
 def deletePost(post_id, info):
     post = Post.objects.filter(id=post_id).first()
     if not post:
