@@ -128,7 +128,12 @@ class PostMutation(graphene.ObjectType):
 # Queries
 
 class PostQuery(graphene.ObjectType):
-    posts = graphene.List(PostType, search=graphene.String())
+    posts = graphene.List(
+        PostType,
+        search=graphene.String(),
+        first=graphene.Int(),
+        skip=graphene.Int(),
+    )
     post = graphene.Field(PostType, post_id=graphene.Int())
     response = graphene.Field(ResponseType, response_id=graphene.Int())
 
@@ -138,11 +143,20 @@ class PostQuery(graphene.ObjectType):
     def resolve_post(self, info, post_id):
         return services.post_by_id(post_id)
 
-    def resolve_posts(self, info, search=None):
+    def resolve_posts(self, info, search=None, first=None, skip=None):
+        qs = Post.objects.all()
+
         if search:
             filter = (
                 Q(title__icontains=search) |
                 Q(text__icontains=search)
             )
-            return Post.objects.filter(filter)
-        return Post.objects.all()
+            qs = qs.filter(filter)
+
+        if skip:
+            qs = qs[skip:]
+
+        if first:
+            qs = qs[:first]
+
+        return qs
