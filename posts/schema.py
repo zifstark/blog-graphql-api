@@ -1,6 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
+from django.db.models import Q
 from .models import Post, Clap, Response
 from . import services
 
@@ -127,7 +128,7 @@ class PostMutation(graphene.ObjectType):
 # Queries
 
 class PostQuery(graphene.ObjectType):
-    posts = graphene.List(PostType)
+    posts = graphene.List(PostType, search=graphene.String())
     post = graphene.Field(PostType, post_id=graphene.Int())
     response = graphene.Field(ResponseType, response_id=graphene.Int())
 
@@ -137,5 +138,11 @@ class PostQuery(graphene.ObjectType):
     def resolve_post(self, info, post_id):
         return services.post_by_id(post_id)
 
-    def resolve_posts(self, info, **kwargs):
+    def resolve_posts(self, info, search=None):
+        if search:
+            filter = (
+                Q(title__icontains=search) |
+                Q(text__icontains=search)
+            )
+            return Post.objects.filter(filter)
         return Post.objects.all()
